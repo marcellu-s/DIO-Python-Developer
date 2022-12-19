@@ -128,14 +128,16 @@ def sacar(conta):
 
 
 def extrato(conta):
-
-    print(f'SALDO ATUAL: R$ {conta["saldo"]}\n')
-    print('='*49)
-    print('EXTRATO'.center(49))
-    print('='*49)
-    for valor in conta['extrato']:
-        for tipo, extrato in valor.items():
-            print(f'{tipo} \t\t{colors(f"R$ {extrato[1]}", "red")} em {extrato[0]}' if tipo == 'SAQUE' else f'{tipo} \t{colors(f"R$ {extrato[1]}", "green")} em {extrato[0]}')
+    if len(conta) > 0:
+        print(f'SALDO ATUAL: R$ {conta["saldo"]}\n')
+        print('='*49)
+        print('EXTRATO'.center(49))
+        print('='*49)
+        for valor in conta['extrato']:
+            for tipo, extrato in valor.items():
+                print(f'{tipo} \t\t{colors(f"R$ {extrato[1]}", "red")} em {extrato[0]}' if tipo == 'SAQUE' else f'{tipo} \t{colors(f"R$ {extrato[1]}", "green")} em {extrato[0]}')
+     else:
+        print(colors('Sem registro de movimentação na conta', 'yellow'))
 
 
 def filtrar_usuario(usuarios, cpf):
