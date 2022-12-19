@@ -73,11 +73,11 @@ def depositar(conta):
             continue
         else:
             print(f'Realizando depósito, aguarde...')
-            sleep(3)
+            sleep(1.5)
             system('cls')
             print(f'SALDO ANTIGO: R$ {conta["saldo"]}\n')
             conta['saldo'] += valor_deposito
-            conta['valor_depositado'].append([datetime.now().strftime('%Y-%m-%d %H:%M:%S'), valor_deposito])
+            conta['extrato'].append({'DEPÓSITO':(datetime.now().strftime('%d-%m-%Y as %H:%M:%S'), valor_deposito)})
             print(colors(f'Depósito de R$ {valor_deposito} realizado com sucesso', 'green'))
             print(f'\nNOVO SALDO: R$ {conta["saldo"]}')
             return conta
@@ -95,7 +95,9 @@ def sacar(conta):
         if 1 <= valor_saque <= 500:
             pass
         elif valor_saque > 500:
-            print(colors('Seu limite de saque é de até 500.', 'yellow'))
+            print(colors('\nValor limite de R$ 500 excedido.', 'yellow'))
+            sleep(1.5)
+            system('cls')
             continue
         else:
             print(colors('ERRO: valor inválido.', 'red'))
@@ -103,51 +105,33 @@ def sacar(conta):
 
         if valor_saque > conta['saldo']:
             print(
-                colors(f'ERRO: Não foi possível realizar o saque, seu saldo é de R$ {conta["saldo"]}', 'red'))
+                colors(f'ERRO: Não foi possível realizar o saque de R$ {valor_saque}, pois o seu saldo é de R$ {conta["saldo"]}', 'red'))
             resp = input('Deseja finalizar a operação? [S/N]: ').upper()
             if resp == 'S':
                 return conta
             elif resp == 'N':
+                system('cls')
                 continue
             else:
                 print(colors('ERRO: Tente novamente.', 'red'))
         else:
             print('Realizando a operação, aguarde...')
-            sleep(3)
+            sleep(1.5)
             system('cls')
             print(f'SALDO ANTIGO: R${conta["saldo"]}\n')
             conta['saldo'] -= valor_saque
             print(colors(f'Saque de R$ {valor_saque} realizado com sucesso.', 'green'))
             print(f'\nNOVO SALDO: R$ {conta["saldo"]}')
-            conta['valor_sacado'].append([datetime.now().strftime('%Y-%m-%d %H:%M:%S'), valor_saque])
+            conta['extrato'].append({'SAQUE': (datetime.now().strftime('%d-%m-%Y as %H:%M:%S'), valor_saque)})
             return conta
 
 
 def extrato(conta):
-    while True:
 
-        system('cls')
-        print(f'SALDO ATUAL: R$ {conta["saldo"]}\n')
-        opcao = menu('EXTRATO', ['Histórico de Depósito', 'Histórico de Saque', 'Sair'])
-        print()
-        match opcao:
-            case 1:
-
-                if len(conta['valor_depositado']) == 0:
-                    print('SEM REGISTRO')
-                else:
-                    for valor in (conta['valor_depositado']):   
-                        print(f'[{valor[0]}] - R$ {colors(valor[1], "green")}')
-                system('pause')
-            case 2:
-                if len(conta['valor_sacado']) == 0:
-                    print('SEM REGISTRO')
-                else:
-                    for valor in (conta['valor_sacado']):
-                        
-                        print(f'[{valor[0]}]- R$ {colors(valor[1], "green")}')
-                system('pause')
-            case 3:
-                break
-            case 4:
-                break
+    print(f'SALDO ATUAL: R$ {conta["saldo"]}\n')
+    print('='*45)
+    print('EXTRATO'.center(45))
+    print('='*45)
+    for valor in conta['extrato']:
+        for tipo, extrato in valor.items():
+            print(f'{tipo} - {colors(f"R$ {extrato[1]}", "red")} em {extrato[0]}' if tipo == 'SAQUE' else f'{tipo} - {colors(f"R$ {extrato[1]}", "green")} em {extrato[0]}')
