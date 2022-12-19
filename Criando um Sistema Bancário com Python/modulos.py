@@ -1,9 +1,10 @@
 from time import sleep
 from os import system
-from datetime import datetime
+from datetime import datetime, date
+from re import search
 
 
-def colors(text, cor):  # FUNÇÃO PARA ATRIBUIR COR EM TEXTOS
+def colors(text, cor):
     match cor:
         case 'red':
             return (f'\033[1;31m{text}\033[m')
@@ -19,7 +20,7 @@ def colors(text, cor):  # FUNÇÃO PARA ATRIBUIR COR EM TEXTOS
             return (f'\033[1;37m{text}\033[m')
 
 
-def leiafloat(msg):  # FUNÇÃO PARA LER UM VALOR FLOAT
+def leiafloat(msg):
     while True:
         try:
             valor = float(input(msg))
@@ -29,7 +30,7 @@ def leiafloat(msg):  # FUNÇÃO PARA LER UM VALOR FLOAT
         return valor
 
 
-def leiaint(msg):  # FUNÇÃO PARA LER UM VALOR INTEIRO
+def leiaint(msg):
     while True:
         try:
             valor = int(input(msg))
@@ -56,7 +57,7 @@ def menu(title, lista):
             print('\033[1;31mERRO: valor inválido!\033[m')
             continue
 
-        if 1 <= op <= 4:
+        if 1 <= op <= 7:
             return op
         else:
             print('\033[1;31mERRO: seleção inválida!\033[m')
@@ -129,9 +130,102 @@ def sacar(conta):
 def extrato(conta):
 
     print(f'SALDO ATUAL: R$ {conta["saldo"]}\n')
-    print('='*45)
-    print('EXTRATO'.center(45))
-    print('='*45)
+    print('='*49)
+    print('EXTRATO'.center(49))
+    print('='*49)
     for valor in conta['extrato']:
         for tipo, extrato in valor.items():
-            print(f'{tipo} - {colors(f"R$ {extrato[1]}", "red")} em {extrato[0]}' if tipo == 'SAQUE' else f'{tipo} - {colors(f"R$ {extrato[1]}", "green")} em {extrato[0]}')
+            print(f'{tipo} \t\t{colors(f"R$ {extrato[1]}", "red")} em {extrato[0]}' if tipo == 'SAQUE' else f'{tipo} \t{colors(f"R$ {extrato[1]}", "green")} em {extrato[0]}')
+
+
+def filtrar_usuario(usuarios, cpf):
+    
+    if usuarios.get(cpf) == None:
+        return False
+    else:
+        return True
+
+
+def criar_usuario(usuarios):
+    
+    print('='*40)
+    print('CRIAR USUÁRIO'.center(40))
+    print('='*40)
+    
+    while True:
+        
+        cpf = input('Digite seu CPF: ')
+        # apenas valida o tamanho
+        if search('^[0-9]{11}$', cpf):
+            if not filtrar_usuario(usuarios, cpf):
+                break
+            else:
+                print(colors('\nUsuário já cadastrado.\n', 'yellow'))
+                continue
+        else:
+            print(colors('\nERRO: CPF inválido.\n', 'red'))
+            continue
+
+    while True:
+
+        name = input('Nome: ').strip()
+        if search('[0-9]', name):
+            print(colors('\nERRO: Nome inválido.\n', 'red'))
+            continue 
+        else:
+            break
+
+    while True:
+        
+        data_nascimento = input('Data de nascimento (dd/mm/aaaa): ')
+        # OBS: está validando somente o formato.
+        if search('^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])/[12][0-9]{3}$', data_nascimento):
+            idade = date.today().year - int(data_nascimento[6:])
+            break 
+        else: 
+            print(colors('\nERRO: Data inválida.\n', 'red'))
+            continue
+
+    print('\nOBS: logradouro, nº - bairro - cidade/sigla do estado\n')
+    endereco = input('Informe seu endereço: ')
+
+    print('\nCriando...')
+    sleep(1.5)
+    print(colors('Usuário criado com sucesso... Bem-vindo(a)', 'green'))
+
+    usuarios.setdefault(cpf, {'Nome': name, 'Idade': idade, 'Endereço': endereco})
+
+    return usuarios
+
+
+def criar_conta(usuarios, agencia, num_conta):
+    while True:
+        
+        cpf = input('Digite seu CPF: ')
+        # apenas valida o tamanho
+        if search('^[0-9]{11}$', cpf):
+            if filtrar_usuario(usuarios, cpf):
+                print(colors("\n=== Conta criada com sucesso! ===", 'green'))
+                print(f'Agência \t{agencia}')
+                print(f'Núm. conta \t{num_conta}')
+                print(f'Titular \t{usuarios[cpf]["Nome"]}')
+                return {'Agência': agencia, 'Núm. conta': num_conta, 'Titular': usuarios[cpf]['Nome']}
+            else:
+                print(colors('\nUsuário não encontrado.\n', 'yellow'))
+                break
+        else:
+            print(colors('\nERRO: CPF inválido.\n', 'red'))
+            continue
+    
+
+def listar_contas(usuarios, contas):
+    if len(contas) > 0:
+        print('='*40)
+        print('CONTAS REGISTRADAS'.center(40))
+        for conta in contas:
+            print('='*40)
+            for key, value in conta.items():
+                print(f'{key} \t{value}')
+    else:
+        print(colors('Nenhuma conta foi encontrada.', 'yellow'))
+
