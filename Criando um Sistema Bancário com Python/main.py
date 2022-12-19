@@ -14,10 +14,11 @@ while True:
 
     system('cls')
 
-    opcao = menu('BANCO DIO', ['Depositar', 'Sacar', 'Extrato', 'Criar conta', 'Listar contas', 'Novo usuário', 'Sair'])
+    opcao = menu('BANCO DIO', ['Depositar', 'Sacar', 'Extrato',
+                 'Criar conta', 'Listar contas', 'Novo usuário', 'Sair'])
 
     system('cls')
-    
+
     match opcao:
         case 1:
             conta = depositar(conta)

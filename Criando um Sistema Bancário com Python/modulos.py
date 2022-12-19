@@ -78,14 +78,15 @@ def depositar(conta):
             system('cls')
             print(f'SALDO ANTIGO: R$ {conta["saldo"]}\n')
             conta['saldo'] += valor_deposito
-            conta['extrato'].append({'DEPÓSITO':(datetime.now().strftime('%d-%m-%Y as %H:%M:%S'), valor_deposito)})
-            print(colors(f'Depósito de R$ {valor_deposito} realizado com sucesso', 'green'))
+            conta['extrato'].append(
+                {'DEPÓSITO': (datetime.now().strftime('%d-%m-%Y as %H:%M:%S'), valor_deposito)})
+            print(
+                colors(f'Depósito de R$ {valor_deposito} realizado com sucesso', 'green'))
             print(f'\nNOVO SALDO: R$ {conta["saldo"]}')
             return conta
-        
+
 
 def sacar(conta):
-
 
     while True:
 
@@ -121,27 +122,31 @@ def sacar(conta):
             system('cls')
             print(f'SALDO ANTIGO: R${conta["saldo"]}\n')
             conta['saldo'] -= valor_saque
-            print(colors(f'Saque de R$ {valor_saque} realizado com sucesso.', 'green'))
+            print(
+                colors(f'Saque de R$ {valor_saque} realizado com sucesso.', 'green'))
             print(f'\nNOVO SALDO: R$ {conta["saldo"]}')
-            conta['extrato'].append({'SAQUE': (datetime.now().strftime('%d-%m-%Y as %H:%M:%S'), valor_saque)})
+            conta['extrato'].append(
+                {'SAQUE': (datetime.now().strftime('%d-%m-%Y as %H:%M:%S'), valor_saque)})
             return conta
 
 
 def extrato(conta):
-    if len(conta) > 0:
+
+    if len(conta['extrato']) > 0:
         print(f'SALDO ATUAL: R$ {conta["saldo"]}\n')
         print('='*49)
         print('EXTRATO'.center(49))
         print('='*49)
         for valor in conta['extrato']:
             for tipo, extrato in valor.items():
-                print(f'{tipo} \t\t{colors(f"R$ {extrato[1]}", "red")} em {extrato[0]}' if tipo == 'SAQUE' else f'{tipo} \t{colors(f"R$ {extrato[1]}", "green")} em {extrato[0]}')
-     else:
+                print(f'{tipo} \t\t{colors(f"R$ {extrato[1]}", "red")} em {extrato[0]}' if tipo ==
+                      'SAQUE' else f'{tipo} \t{colors(f"R$ {extrato[1]}", "green")} em {extrato[0]}')
+    else:
         print(colors('Sem registro de movimentação na conta', 'yellow'))
 
 
 def filtrar_usuario(usuarios, cpf):
-    
+
     if usuarios.get(cpf) == None:
         return False
     else:
@@ -149,13 +154,13 @@ def filtrar_usuario(usuarios, cpf):
 
 
 def criar_usuario(usuarios):
-    
+
     print('='*40)
     print('CRIAR USUÁRIO'.center(40))
     print('='*40)
-    
+
     while True:
-        
+
         cpf = input('Digite seu CPF: ')
         # apenas valida o tamanho
         if search('^[0-9]{11}$', cpf):
@@ -173,18 +178,18 @@ def criar_usuario(usuarios):
         name = input('Nome: ').strip()
         if search('[0-9]', name):
             print(colors('\nERRO: Nome inválido.\n', 'red'))
-            continue 
+            continue
         else:
             break
 
     while True:
-        
+
         data_nascimento = input('Data de nascimento (dd/mm/aaaa): ')
         # OBS: está validando somente o formato.
         if search('^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])/[12][0-9]{3}$', data_nascimento):
             idade = date.today().year - int(data_nascimento[6:])
-            break 
-        else: 
+            break
+        else:
             print(colors('\nERRO: Data inválida.\n', 'red'))
             continue
 
@@ -195,14 +200,15 @@ def criar_usuario(usuarios):
     sleep(1.5)
     print(colors('Usuário criado com sucesso... Bem-vindo(a)', 'green'))
 
-    usuarios.setdefault(cpf, {'Nome': name, 'Idade': idade, 'Endereço': endereco})
+    usuarios.setdefault(
+        cpf, {'Nome': name, 'Idade': idade, 'Endereço': endereco})
 
     return usuarios
 
 
 def criar_conta(usuarios, agencia, num_conta):
     while True:
-        
+
         cpf = input('Digite seu CPF: ')
         # apenas valida o tamanho
         if search('^[0-9]{11}$', cpf):
@@ -218,7 +224,7 @@ def criar_conta(usuarios, agencia, num_conta):
         else:
             print(colors('\nERRO: CPF inválido.\n', 'red'))
             continue
-    
+
 
 def listar_contas(usuarios, contas):
     if len(contas) > 0:
@@ -230,4 +236,3 @@ def listar_contas(usuarios, contas):
                 print(f'{key} \t{value}')
     else:
         print(colors('Nenhuma conta foi encontrada.', 'yellow'))
-
